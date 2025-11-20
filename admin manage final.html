@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Books</title>
+
+<style>
+    body{margin:0;font-family:Arial;background:#f1f1f1;}
+    .words{background:#002a01;color:white;padding:15px;display:flex;align-items:center;font-family: 'Times New Roman', Times, serif;}
+    .words img{width:90px;height:90px;margin-right:10px;}
+    .words p{margin: 0;}
+    nav {background-color: rgb(0, 104, 0); position: relative; z-index: 1;}
+
+/* Hamburger icon */
+.nav1 {
+    font-size: 28px;
+    cursor: pointer;
+    padding: 15px;
+    color: white;
+    display: block;
+}
+
+/* Nav links container */
+.nav2 {
+    display: none;
+    flex-direction: column;
+}
+
+/* Links */
+.nav2 a, .dropbtn {
+    color: white;
+    padding: 12px 20px;
+    text-decoration: none;
+    display: block;
+    font-weight: bold;
+}
+
+/* Dropdown container */
+.dropdown { position: relative; }
+
+/* Dropdown content */
+.dropdown-content {
+    display: none;
+    flex-direction: column;
+    background-color: darkgreen;
+    border: 2px solid rgb(0, 74, 5);
+    border-radius: 5px;
+}
+.dropdown-content a {
+    padding: 10px 20px;
+}
+.dropdown-content a:hover {
+    background-color: white;
+    color: darkgreen;
+}
+
+/* Show dropdown on hover (desktop) */
+.dropdown:hover .dropdown-content { display: flex; }
+
+/* Show nav when active (mobile) */
+.nav2.active { display: flex; }
+.dropdown.active .dropdown-content { display: flex; }
+
+/* Desktop: hide hamburger, show links horizontally */
+@media (min-width: 600px) {
+    .nav1 { display: none; }
+    .nav2 { display: flex; flex-direction: row; justify-content: space-between; align-items: center; }
+    .nav2 a, .dropbtn { padding: 15px; }
+    .dropdown-content { position: absolute; top: 100%; left: 0; }
+}
+
+.dropbtn{ padding: 10px ; background-color: rgb(0, 26, 0); border-radius: 5px; }
+
+.left{ display: flex; gap: 20px; }
+.left a{ color: white; text-decoration: none; font-weight: bold; }
+
+.search-container{margin:20px;display:flex;justify-content:center;}
+.search-container input{width:80%;padding:12px;font-size:16px;border:1px solid gray;border-radius:6px;}
+
+.book-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px;padding:20px;}
+.book{background:white;padding:15px;border-radius:10px;text-align:center;box-shadow:0 0 5px rgba(0,0,0,0.2);}
+.book img{width:150px;height:200px;object-fit:cover;border-radius:8px;}
+
+.delete-btn{margin-top:10px;padding:8px 15px;background:red;color:white;border:none;border-radius:5px;cursor:pointer;}
+.delete-btn:hover{background:darkred;}
+.update-btn{margin-top:10px;padding:8px 15px;background:orange;color:white;border:none;border-radius:5px;cursor:pointer;}
+.update-btn:hover{background:darkorange;}
+
+.not-found{text-align:center;font-size:20px;color:red;display:none;}
+
+/* Modal styling */
+.modal-bg { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:1000; }
+.modal-box { background:white; padding:20px; border-radius:12px; width:90%; max-width:400px; text-align:center; }
+.modal-box input, .modal-box textarea { width:100%; margin:5px 0; padding:5px; }
+.modal-box button { padding:8px 15px; border:none; border-radius:5px; cursor:pointer; }
+.modal-box .save-btn { background:green; color:white; }
+.modal-box .cancel-btn { background:gray; color:white; }
+</style>
+</head>
+<body>
+
+<div class="words">
+    <img src="LMS IMG/logo.jpg">
+    <div>
+        <h2 style="margin:0;">Mountain Province State University</h2><br>
+        <p>Bontoc Campus</p>
+        <p>Poblacion,Bontoc,Mountain Province</p>
+        <p style="margin:0;">Library</p>
+    </div>
+</div>
+
+<nav>
+    <div class="nav1" id="nav1">&#9776;</div>
+    <div class="nav2" id="nav2">
+        <div class="left">
+            <a href="admin home.html">HOME</a>
+            <a href="admin bookpage.html">BOOK</a>
+            <div class="dropdown" id="adminDropdown">
+                <a href="#" class="dropbtn">ADMIN</a>
+                <div class="dropdown-content">
+                    <div><a href="add book.html">ADD BOOK</a></div>
+                    <div><a href="admin manage final.html">MANAGE BOOKS</a></div>
+                    <div><a href="admin borrowed books.html">BOOKS BORROWED</a></div>
+                    <div><a href="approval.html">BOOK APPROVAL</a></div>
+                    <div><a href="users.html">USERS</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="right">
+            <a href="index.html" id="logoutBtn" style="background-color: rgb(0,104,0); padding: 8px 15px; border-radius: 5px; color: white; font-weight: bold; text-decoration: none;">LOGOUT</a>
+        </div>
+    </div>
+</nav>
+
+<div class="search-container">
+    <input id="searchBar" placeholder="Search..." onkeyup="searchBooks()">
+</div>
+
+<div class="book-grid" id="bookGrid"></div>
+<p class="not-found" id="notFound">No books found</p>
+
+<!-- Modal for Update -->
+<div class="modal-bg" id="modalBg">
+    <div class="modal-box">
+        <h3>Edit Book</h3>
+        <input type="text" id="editTitle" placeholder="Title">
+        <input type="text" id="editAuthor" placeholder="Author">
+        <input type="text" id="editCategory" placeholder="Category">
+        <input type="text" id="editImage" placeholder="Image URL">
+        <textarea id="editDesc" placeholder="Description"></textarea>
+        <div style="margin-top:10px; display:flex; justify-content:center; gap:10px;">
+            <button class="save-btn" onclick="saveBook()">Save</button>
+            <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Mobile nav toggle
+document.getElementById("nav1").addEventListener("click", () => {
+    document.getElementById("nav2").classList.toggle("active");
+});
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("loggedInUser");
+    sessionStorage.clear();
+    window.location.href = "login.html";
+});
+
+// Book data
+let defaultBooks = [
+    {title:"Criminal Investigation", author:"Charles R. Swanson", category:"Criminology", image:"bookpage/crim inves.jpg", desc:"A detailed guide on crime detection and investigative procedures."},
+    {title:"Forensic Science Essentials", author:"Richard Saferstein", category:"Criminology", image:"bookpage/for sci.jpg", desc:"Covers modern forensic science techniques used in solving crimes."},
+    {title:"Fundamentals of Nursing", author:"Patricia A. Potter", category:"Nursing", image:"bookpage/fon.jpg", desc:"Core concepts, clinical skills, and nursing responsibilities."},
+    {title:"Medical-Surgical Nursing", author:"Ignatavicius & Workman", category:"Nursing", image:"bookpage/msn.jpg", desc:"Complete MS nursing concepts, patient care, and procedures."},
+    {title:"Programming Fundamentals", author:"Joyce Farrell", category:"Information Technology", image:"bookpage/pf.png", desc:"Introduction to coding logic, variables, loops, and algorithms."},
+    {title:"Computer Networking", author:"James F. Kurose", category:"Information Technology", image:"bookpage/cn.jpg", desc:"Explains network models, protocols, and internet architecture."},
+    {title:"Office Management Principles", author:"Ricky Griffin", category:"BSOA", image:"bookpage/omp.jpg", desc:"Essential office administration concepts and management skills."},
+    {title:"Foundations of Education", author:"Ornstein & Levine", category:"Teacher Education", image:"bookpage/fe.jpg", desc:"Covers teaching history, philosophy, and classroom foundations."},
+    {title:"Introduction to Psychology", author:"David G. Myers", category:"Liberal Arts", image:"bookpage/ip.jpg", desc:"Explores human behavior, cognition, emotions, and mental processes."},
+    {title:"Accounting Principles", author:"Jerry Weygandt", category:"Accountancy", image:"bookpage/ap.jpg", desc:"Covers accounting basics, financial reporting, and analysis."},
+    {title:"Principles of Marketing", author:"Philip Kotler", category:"Business Administration", image:"bookpage/pm.jpg", desc:"Core marketing concepts, strategies, and real-world applications."}
+];
+
+let currentEditIndex = null;
+
+function loadBooks(){
+    let books=JSON.parse(localStorage.getItem("books"));
+    if(!books){localStorage.setItem("books",JSON.stringify(defaultBooks));books=defaultBooks;}
+    displayBooks(books);
+}
+
+function displayBooks(list){
+    let grid=document.getElementById("bookGrid");
+    grid.innerHTML="";
+    list.forEach((b,i)=>{
+        grid.innerHTML+=`
+            <div class="book">
+                <img src="${b.image}">
+                <h3>${b.title}</h3>
+                <p><b>${b.author}</b></p>
+                <p>${b.category}</p>
+                <div style="margin-top:10px; display:flex; justify-content:center; gap:10px;">
+                    <button class="update-btn" onclick="updateBook(${i})">Update</button>
+                    <button class="delete-btn" onclick="deleteBook(${i})">Delete</button>
+                </div>
+            </div>`;
+    });
+}
+
+function searchBooks(){
+    let s=document.getElementById("searchBar").value.toLowerCase();
+    let books=JSON.parse(localStorage.getItem("books"));
+    let filtered=books.filter(b=>
+        b.title.toLowerCase().includes(s)||
+        b.author.toLowerCase().includes(s)||
+        b.category.toLowerCase().includes(s)
+    );
+    displayBooks(filtered);
+    document.getElementById("notFound").style.display=filtered.length?"none":"block";
+}
+
+
+
+function updateBook(i){
+    let books = JSON.parse(localStorage.getItem("books"));
+    currentEditIndex = i;
+    const book = books[i];
+    document.getElementById("editTitle").value = book.title;
+    document.getElementById("editAuthor").value = book.author;
+    document.getElementById("editCategory").value = book.category;
+    document.getElementById("editImage").value = book.image;
+    document.getElementById("editDesc").value = book.desc;
+    document.getElementById("modalBg").style.display = "flex";
+}
+
+function saveBook(){
+    let books = JSON.parse(localStorage.getItem("books"));
+    books[currentEditIndex] = {
+        title: document.getElementById("editTitle").value,
+        author: document.getElementById("editAuthor").value,
+        category: document.getElementById("editCategory").value,
+        image: document.getElementById("editImage").value,
+        desc: document.getElementById("editDesc").value
+    };
+    localStorage.setItem("books", JSON.stringify(books));
+    closeModal();
+    loadBooks();
+}
+
+function closeModal(){
+    document.getElementById("modalBg").style.display = "none";
+}
+
+loadBooks();
+</script>
+
+</body>
+</html>

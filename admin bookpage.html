@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Books</title>
+
+<style>
+body { margin: 0; }
+.words {
+    background-color: rgb(0, 42, 1);
+    padding: 15px;
+    display: flex;
+}
+.words h1 { font-weight: 500; color: white; font-family: 'Times New Roman', Times, serif; }
+.words p { color: white; margin: 0; }
+.words img { width: 100px; height: 100px; }
+
+nav { background-color: rgb(0, 104, 0); position: relative; z-index: 1; }
+.nav1 { font-size: 28px; cursor: pointer; padding: 15px; color: white; display: block; }
+.nav2 { display: none; flex-direction: column; }
+.nav2 a, .dropbtn { color: white; padding: 12px 20px; text-decoration: none; display: block; font-weight: bold; }
+.dropdown { position: relative; }
+.dropdown-content { display: none; flex-direction: column; background-color: darkgreen; border: 2px solid rgb(0, 74, 5); border-radius: 5px; }
+.dropdown-content a { padding: 10px 20px; }
+.dropdown-content a:hover { background-color: white; color: darkgreen; }
+.dropdown:hover .dropdown-content { display: flex; }
+.nav2.active { display: flex; }
+.dropdown.active .dropdown-content { display: flex; }
+@media (min-width: 600px) {
+    .nav1 { display: none; }
+    .nav2 { display: flex; flex-direction: row; }
+    .nav2 a, .dropbtn { padding: 15px; }
+    .dropdown-content { position: absolute; top: 100%; left: 0; }
+}
+.dropbtn { padding: 10px; background-color: rgb(0, 26, 0); border-radius: 5px; }
+
+.search-container{ margin: 20px 15px; display: flex; justify-content: center; }
+.search-container input{ width: 70%; padding: 10px; font-size: 17px; border-radius: 5px; border: 1px solid gray; }
+
+.book-grid{ display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; padding: 20px; }
+.book{ background: #f5f5f5; padding: 15px; border-radius: 10px; transition: 0.3s; text-align: center; cursor: pointer; }
+.book:hover{ background: #dcdcdc; transform: scale(1.03); }
+.book img{ width: 150px; height: 200px; object-fit: cover; border-radius: 8px; }
+.book h4{ margin: 10px 0 5px 0; }
+.book p{ margin: 0; font-size: 14px; }
+.not-found{ text-align: center; font-size: 20px; margin-top: 30px; color: red; display: none; }
+
+.modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; }
+.modal-box { background: white; width: 90%; max-width: 450px; padding: 20px; border-radius: 12px; text-align: center; }
+.modal-box img { width: 180px; height: 230px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; }
+.modal-box h2 { margin: 10px 0; }
+.close-btn { margin-top: 15px; padding: 8px 20px; background: rgb(0, 104, 0); color: white; border: none; border-radius: 6px; cursor: pointer; }
+.close-btn:hover { background: rgb(0, 70, 0); }
+</style>
+</head>
+
+<body>
+<div class="words">
+    <img src="LMS IMG/logo.jpg" alt="MPSU Logo">
+    <div class="header1">
+        <h1>Mountain Province State University</h1>
+        <p>Bontoc Campus</p>
+        <p>Poblacion,Bontoc,Mountain Province</p>
+        <p>Library</p>
+    </div>
+</div>
+
+<nav>
+    <div class="nav1" id="nav1">&#9776;</div>
+    <div class="nav2" id="nav2" style="display: flex; justify-content: space-between; align-items: center;">
+        <!-- Left links -->
+        <div class="left" style="display: flex; gap: 20px;">
+            <a href="admin home.html">HOME</a>
+            <a href="admin bookpage.html">BOOK</a>
+
+            <div class="dropdown" id="adminDropdown">
+                <a href="#" class="dropbtn">ADMIN</a>
+                <div class="dropdown-content">
+                    <div><a href="add book.html">ADD BOOK</a></div>
+                    <div><a href="admin manage final.html">MANAGE BOOKS</a></div>
+                    <div><a href="admin borrowed books.html">BOOKS BORROWED</a></div>
+                    <div><a href="approval.html">BOOK APPROVAL</a></div>
+                    <div><a href="users.html">USERS</a></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right logout button -->
+        <div class="right">
+            <a href="index.html" id="logoutBtn" style="background-color: rgb(0,104,0); padding: 8px 15px; border-radius: 5px; color: white; font-weight: bold; text-decoration: none;">LOGOUT</a>
+        </div>
+    </div>
+</nav>
+
+<div class="search-container">
+    <input type="text" id="searchBar" placeholder="Search by title, author, or category..." onkeyup="searchBooks()">
+</div>
+
+<div class="book-grid" id="bookGrid"></div>
+
+<p class="not-found" id="notFound">Book Not Found / Not Available</p>
+
+<div class="modal-bg" id="modalBg">
+    <div class="modal-box">
+        <img id="modalImage">
+        <h2 id="modalTitle"></h2>
+        <p><b>Author:</b> <span id="modalAuthor"></span></p>
+        <p><b>Category:</b> <span id="modalCategory"></span></p>
+        <p id="modalDesc" style="margin-top:10px;"></p>
+        <button class="close-btn" onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<script>
+// Toggle mobile nav
+document.getElementById("nav1").addEventListener("click", () => {
+    document.getElementById("nav2").classList.toggle("active");
+});
+
+// Books array
+let booksList = [
+    {title:"Criminal Investigation", author:"Charles R. Swanson", category:"Criminology", image:"bookpage/crim inves.jpg", desc:"A detailed guide on crime detection and investigative procedures."},
+    {title:"Forensic Science Essentials", author:"Richard Saferstein", category:"Criminology", image:"bookpage/for sci.jpg", desc:"Covers modern forensic science techniques used in solving crimes."},
+    {title:"Fundamentals of Nursing", author:"Patricia A. Potter", category:"Nursing", image:"bookpage/fon.jpg", desc:"Core concepts, clinical skills, and nursing responsibilities."},
+    {title:"Medical-Surgical Nursing", author:"Ignatavicius & Workman", category:"Nursing", image:"bookpage/msn.jpg", desc:"Complete MS nursing concepts, patient care, and procedures."},
+    {title:"Programming Fundamentals", author:"Joyce Farrell", category:"Information Technology", image:"bookpage/pf.png", desc:"Introduction to coding logic, variables, loops, and algorithms."},
+    {title:"Computer Networking", author:"James F. Kurose", category:"Information Technology", image:"bookpage/cn.jpg", desc:"Explains network models, protocols, and internet architecture."},
+    {title:"Office Management Principles", author:"Ricky Griffin", category:"BSOA", image:"bookpage/omp.jpg", desc:"Essential office administration concepts and management skills."},
+    {title:"Foundations of Education", author:"Ornstein & Levine", category:"Teacher Education", image:"bookpage/fe.jpg", desc:"Covers teaching history, philosophy, and classroom foundations."},
+    {title:"Introduction to Psychology", author:"David G. Myers", category:"Liberal Arts", image:"bookpage/ip.jpg", desc:"Explores human behavior, cognition, emotions, and mental processes."},
+    {title:"Accounting Principles", author:"Jerry Weygandt", category:"Accountancy", image:"bookpage/ap.jpg", desc:"Covers accounting basics, financial reporting, and analysis."},
+    {title:"Principles of Marketing", author:"Philip Kotler", category:"Business Administration", image:"bookpage/pm.jpg", desc:"Core marketing concepts, strategies, and real-world application."}
+];
+
+// Load books dynamically
+function loadBooks() {
+    const grid = document.getElementById("bookGrid");
+    grid.innerHTML = "";
+    booksList.forEach(book => {
+        const div = document.createElement("div");
+        div.className = "book";
+        div.dataset.title = book.title;
+        div.dataset.author = book.author;
+        div.dataset.category = book.category;
+        div.dataset.desc = book.desc;
+        div.dataset.image = book.image;
+        div.onclick = () => openModal(div);
+        div.innerHTML = `<img src="${book.image}"><h4>${book.title}</h4><p><b>Author:</b> ${book.author}</p><p><b>Category:</b> ${book.category}</p>`;
+        grid.appendChild(div);
+    });
+}
+
+// Search books
+function searchBooks() {
+    const input = document.getElementById("searchBar").value.toLowerCase();
+    const books = document.querySelectorAll(".book");
+    let found = false;
+    books.forEach(book => {
+        const title = book.dataset.title.toLowerCase();
+        const author = book.dataset.author.toLowerCase();
+        const category = book.dataset.category.toLowerCase();
+        if(title.includes(input) || author.includes(input) || category.includes(input)) {
+            book.style.display = "block";
+            found = true;
+        } else {
+            book.style.display = "none";
+        }
+    });
+    document.getElementById("notFound").style.display = found ? "none" : "block";
+}
+
+// Modal functions
+function openModal(book) {
+    document.getElementById("modalImage").src = book.dataset.image;
+    document.getElementById("modalTitle").innerText = book.dataset.title;
+    document.getElementById("modalAuthor").innerText = book.dataset.author;
+    document.getElementById("modalCategory").innerText = book.dataset.category;
+    document.getElementById("modalDesc").innerText = book.dataset.desc;
+    document.getElementById("modalBg").style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("modalBg").style.display = "none";
+}
+
+// Initial load
+loadBooks();
+// Load books dynamically with Update and Delete buttons
+function loadBooks() {
+    const grid = document.getElementById("bookGrid");
+    grid.innerHTML = "";
+
+    booksList.forEach((book, index) => {
+        const div = document.createElement("div");
+        div.className = "book";
+        div.dataset.title = book.title;
+        div.dataset.author = book.author;
+        div.dataset.category = book.category;
+        div.dataset.desc = book.desc;
+        div.dataset.image = book.image;
+
+        div.innerHTML = `
+            <img src="${book.image}">
+            <h4>${book.title}</h4>
+            <p><b>Author:</b> ${book.author}</p>
+            <p><b>Category:</b> ${book.category}</p>
+            <div style="margin-top:10px; display:flex; justify-content:center; gap:10px;">
+                <button onclick="updateBook(${index})" style="padding:5px 10px; background:orange; color:white; border:none; border-radius:5px; cursor:pointer;">Update</button>
+                <button onclick="deleteBook(${index})" style="padding:5px 10px; background:red; color:white; border:none; border-radius:5px; cursor:pointer;">Delete</button>
+            </div>
+        `;
+        grid.appendChild(div);
+    });
+}
+
+
+
+// Update a book
+function updateBook(index) {
+    const book = booksList[index];
+    // Pre-fill modal with book data for editing
+    document.getElementById("modalImage").src = book.image;
+    document.getElementById("modalTitle").innerHTML = `<input type='text' id='editTitle' value='${book.title}'>`;
+    document.getElementById("modalAuthor").innerHTML = `<input type='text' id='editAuthor' value='${book.author}'>`;
+    document.getElementById("modalCategory").innerHTML = `<input type='text' id='editCategory' value='${book.category}'>`;
+    document.getElementById("modalDesc").innerHTML = `<textarea id='editDesc' style='width:100%'>${book.desc}</textarea>`;
+
+    // Add Save button
+    document.getElementById("modalBg").style.display = "flex";
+
+    // Add dynamic save button (replaces close)
+    const closeBtn = document.querySelector(".close-btn");
+    closeBtn.innerText = "Save";
+    closeBtn.onclick = function() {
+        // Save changes
+        booksList[index].title = document.getElementById("editTitle").value;
+        booksList[index].author = document.getElementById("editAuthor").value;
+        booksList[index].category = document.getElementById("editCategory").value;
+        booksList[index].desc = document.getElementById("editDesc").value;
+
+        closeModal(); // Close modal
+        closeBtn.innerText = "Close"; // Reset button text
+        closeBtn.onclick = closeModal; // Reset button action
+        loadBooks(); // Refresh book list
+    }
+}
+
+</script>
+
+</body>
+</html>

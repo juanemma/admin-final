@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Description</title>
+
+    <style>
+ body{
+            margin: 0;
+        }
+                    .words{
+            background-color: rgb(0, 42, 1);
+            padding: 15px;
+            display: flex;
+        }
+        .words h1{
+            font-weight: 500;
+            color: white;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .words p{
+            color: white;
+            margin: 0;
+        }
+        .words img{
+            width: 100px;
+            height: 100px;
+        }
+        .nav1 {
+            background-color: rgb(0, 104, 0);
+            display: flex;
+            align-items: center;
+        }
+        .left{
+            display: flex;
+            gap: 20px;
+        }
+        .left a{
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: bold;
+            gap: 30px;
+        }
+nav {
+    background-color: rgb(0, 104, 0);
+    position: relative;
+    z-index: 1;
+}
+
+/* Hamburger icon */
+.nav1 {
+    font-size: 28px;
+    cursor: pointer;
+    padding: 15px;
+    color: white;
+    display: block;
+}
+
+/* Nav links container */
+.nav2 {
+    display: none;
+    flex-direction: column;
+}
+
+/* Links */
+.nav2 a, .dropbtn {
+    color: white;
+    padding: 12px 20px;
+    text-decoration: none;
+    display: block;
+    font-weight: bold;
+}
+
+/* Dropdown container */
+.dropdown {
+    position: relative;
+}
+
+/* Dropdown content */
+.dropdown-content {
+    display: none;
+    flex-direction: column;
+    background-color: darkgreen;
+    border: 2px solid rgb(0, 74, 5);
+    border-radius: 5px;
+
+}
+
+.dropdown-content a {
+    padding: 10px 20px;
+}
+.dropdown-content a:hover {
+    background-color: white;
+    color: darkgreen;
+}
+
+
+/* Show dropdown on hover (desktop) */
+.dropdown:hover .dropdown-content {
+    display: flex;
+}
+
+/* Show nav when active (mobile) */
+.nav2.active {
+    display: flex;
+}
+
+/* Mobile-friendly dropdown toggle */
+.dropdown.active .dropdown-content {
+    display: flex;
+}
+
+/* Desktop: hide hamburger, show links horizontally */
+@media (min-width: 600px) {
+    .nav1 { display: none; }
+    .nav2 { display: flex; flex-direction: row; }
+    .nav2 a, .dropbtn { padding: 15px; }
+    .dropdown-content { position: absolute; top: 100%; left: 0; }
+}
+.dropbtn{
+    padding: 10px ;
+    background-color: rgb(0, 26, 0);
+    border-radius: 5px;
+
+}
+
+        .container {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+        }
+
+        #cover {
+            width: 220px;
+            height: 320px;
+            margin-bottom: 15px;
+            border: 3px solid green;
+        }
+
+        .back-btn {
+            margin-top: 30px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: darkgreen;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .back-btn:hover {
+            background-color: black;
+        }
+    </style>
+</head>
+
+<body>
+            <div class="words">
+    <img src="LMS IMG/logo.jpg" alt="MPSU Logo">
+    <div class="header1">
+    <h1>Mountain Province State University</h1>
+    <p>Bontoc Campus</p>
+    <p>Poblacion,Bontoc,Mountain Province</p>
+    <p>Library</p>
+    
+    </div>
+
+    </div>
+<nav>
+    <div class="nav1" id="nav1">&#9776;</div> <!-- Hamburger icon -->
+    <div class="nav2" id="nav2">
+        <a href="admin home.html">HOME</a>
+        <a href="admin bookpage.html">BOOK</a>
+
+
+        <div class="dropdown" id="adminDropdown">
+            <a href="#" class="dropbtn">ADMIN</a>
+            <div class="dropdown-content">
+                <div><a href="add book.html">ADD BOOK</a></div>
+                <div><a href="admin manage final.html">MANAGE BOOKS</a></div>
+                <div><a href="admin borrowed books.html">BOOKS BORROWED</a></div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+    <!-- BOOK DETAILS -->
+    <div class="container">
+        <h1 id="title"></h1>
+        <img id="cover" src="" alt="Book Cover">
+        <p id="author" style="font-size: 18px; font-weight: bold;"></p>
+        <p id="details" style="width: 70%; margin: auto; font-size: 16px;"></p>
+
+        <a href="admin bookpage.html" class="back-btn">BACK TO BOOKS</a>
+    </div>
+
+    <script>
+        // BOOK DATABASE
+        const books = {
+            1: {
+                title: "Fundamentals of Information Technology",
+                author: "N. Radhakrishnan, Dhina Suresh, A. R. Bismaya",
+                details: "Covers computer basics, hardware, software, data processing, networking, and modern IT applications.",
+                image: "it/it1.jpg"
+            },
+            2: {
+                title: "Information Technology: An Introduction for Today’s Digital World (2nd Edition)",
+                author: "Richard Fox",
+                details: "Introduces digital systems, networking, cybersecurity, data, and the impact of IT in everyday life.",
+                image: "it/it2.jpg"
+            },
+            3: {
+                title: "Introduction to Information Technology: Computer Fundamentals",
+                author: "Alexis L. Bellegarde, R. M. Rampat",
+                details: "Covers computer fundamentals, hardware, software, IT in education and business, and CSEC-aligned concepts.",
+                image: "it/it3.jpg"
+            },
+            4: {
+                title: "Introduction to Information Technology",
+                author: "Sanjay Saxena",
+                details: "Explains IT systems, programming basics, multimedia, networking, and data communication.",
+                image: "it/it5.jpg"
+            },
+            5: {
+                title: "Information Technology for CSEC",
+                author: "Glenda Gay, Ron Blades",
+                details: "Covers theory, spreadsheets, databases, programming, and digital citizenship.",
+                image: "it/it6.jpg"
+            },
+            6: {
+                title: "Using Information Technology",
+                author: "Brian K. Williams, Stacey C. Sawyer",
+                details: "Focuses on digital tools, Internet literacy, productivity applications, and cybersecurity fundamentals.",
+                image: "it/it7.jpg"
+            },
+            7: {
+                title: "Introduction to Computers and Information Technology (2nd Edition)",
+                author: "Pearson Education",
+                details: "Covers computer basics, operating systems, networking, digital storage, and essential IT skills.",
+                image: "it/it8.jpg"
+            },
+            8: {
+                title: "Introduction to Criminology",
+                author: "Shereen Hassan and Dan Lett",
+                details: "Introduction to crime, criminal behavior, theories of crime, and the justice system.",
+                image: "ps/c1.jpg"
+            },
+            9: {
+                title: "Criminology and Penology",
+                author: "N.V. Paranjape",
+                details: "Explores criminology, penology, punishment, and correctional administration.",
+                image: "ps/c2.jpg"
+            },
+            10: {
+                title: "Advances in Criminology Research",
+                author: "Julia Guzman (Editor)",
+                details: "Contains research developments and academic insights in the field of criminology.",
+                image: "ps/c3.jpg"
+            },
+            11: {
+                title: "Criminology in India",
+                author: "Dr. Ashok Kumar Jain",
+                details: "Discusses India-specific criminology issues, justice system, and crime rates.",
+                image: "ps/c4.jpg"
+            },
+            12: {
+                title: "Criminal Law and Criminology",
+                author: "Joint Volume",
+                details: "Examines the relationship between criminal law and criminal behavior.",
+                image: "ps/c5.jpg"
+            },
+            13: {
+                title: "Political Science",
+                author: "Mark Carl Rom",
+                details: "Introduces political systems, ideologies, governance, and political behavior.",
+                image: "ps/ps1.jpg"
+            },
+            14: {
+                title: "Political Science of the Middle East",
+                author: "Marc Lynch (Editor)",
+                details: "Explores political structures, conflicts, governance, and geopolitics in the Middle East.",
+                image: "ps/ps2.jpg"
+            },
+            15: {
+                title: "Study on Ease Political Science-I",
+                author: "Curriculum Aligned Author",
+                details: "Provides simplified political science lessons aligned with academic curricula.",
+                image: "ps/ps3.jpg"
+            }
+        };
+
+        // GET ID FROM URL
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+
+        // DISPLAY BOOK INFO
+        if (books[id]) {
+            document.getElementById("title").textContent = books[id].title;
+            document.getElementById("author").textContent = "Author: " + books[id].author;
+            document.getElementById("details").textContent = books[id].details;
+            document.getElementById("cover").src = books[id].image;
+        } else {
+            document.querySelector(".container").innerHTML = "<h2>Book not found.</h2>";
+        }
+    </script>
+
+</body>
+</html>
